@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>六层 AI Skill 体系 · System v1.2.0</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg2: #161b27;
+    --bg3: #1e2535;
+    --border: #2a3348;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-muted: #64748b;
+    --c00: #6366f1;
+    --c00-dim: #3730a3;
+    --c01: #f59e0b;
+    --c01-dim: #92400e;
+    --c02: #10b981;
+    --c02-dim: #065f46;
+    --c03: #06b6d4;
+    --c03-dim: #155e75;
+    --c04: #8b5cf6;
+    --c04-dim: #4c1d95;
+    --c05: #ef4444;
+    --c05-dim: #7f1d1d;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ===== TOP NAV ===== */
+  .topnav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,17,23,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 54px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .topnav::-webkit-scrollbar { display: none; }
+
+  .nav-logo {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+    margin-right: 16px;
+    letter-spacing: 0.04em;
+  }
+  .nav-logo span { color: var(--c00); }
+
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.18s;
+    background: transparent;
+    color: var(--text-dim);
+    border-color: var(--border);
+  }
+  .nav-btn:hover { color: var(--text); border-color: #4a5568; background: var(--bg3); }
+  .nav-btn.s00 { color: var(--c00); border-color: var(--c00-dim); }
+  .nav-btn.s00:hover { background: rgba(99,102,241,0.12); }
+  .nav-btn.s01 { color: var(--c01); border-color: var(--c01-dim); }
+  .nav-btn.s01:hover { background: rgba(245,158,11,0.12); }
+  .nav-btn.s02 { color: var(--c02); border-color: var(--c02-dim); }
+  .nav-btn.s02:hover { background: rgba(16,185,129,0.12); }
+  .nav-btn.s03 { color: var(--c03); border-color: var(--c03-dim); }
+  .nav-btn.s03:hover { background: rgba(6,182,212,0.12); }
+  .nav-btn.s04 { color: var(--c04); border-color: var(--c04-dim); }
+  .nav-btn.s04:hover { background: rgba(139,92,246,0.12); }
+  .nav-btn.s05 { color: var(--c05); border-color: var(--c05-dim); }
+  .nav-btn.s05:hover { background: rgba(239,68,68,0.12); }
+
+  /* ===== HERO ===== */
+  .hero {
+    text-align: center;
+    padding: 72px 24px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(99,102,241,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(99,102,241,0.15);
+    border: 1px solid rgba(99,102,241,0.4);
+    color: var(--c00);
+    margin-bottom: 20px;
+    letter-spacing: 0.06em;
+  }
+  .hero-badge::before { content: '●'; font-size: 8px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .hero h1 {
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    background: linear-gradient(135deg, #e2e8f0 30%, #6366f1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+  .hero-sub {
+    font-size: 15px;
+    color: var(--text-dim);
+    max-width: 640px;
+    margin: 0 auto 32px;
+  }
+
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--c00);
+    display: block;
+  }
+  .stat-label { font-size: 12px; color: var(--text-muted); letter-spacing: 0.04em; }
+
+  /* ===== SECTION ===== */
+  .section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px 64px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  /* ===== OVERVIEW CARDS ===== */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .overview-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .overview-card:hover { border-color: #4a5568; transform: translateY(-2px); }
+  .overview-card h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--c00);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+  .tag.blue { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.3); color: #a5b4fc; }
+  .tag.green { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3); color: #6ee7b7; }
+  .tag.amber { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: #fcd34d; }
+
+  /* ===== SKILL CARDS ===== */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+
+  .skill-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    scroll-margin-top: 70px;
+  }
+  .skill-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  .skill-header {
+    padding: 20px 20px 16px;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .skill-card.open .skill-header { border-bottom-color: var(--border); }
+
+  .skill-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .skill-meta { flex: 1; min-width: 0; }
+  .skill-id {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 2px;
+  }
+  .skill-name {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .skill-layer {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .skill-chevron {
+    font-size: 18px;
+    color: var(--text-muted);
+    transition: transform 0.3s;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .skill-card.open .skill-chevron { transform: rotate(90deg); }
+
+  .skill-body {
+    display: none;
+    padding: 20px;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .skill-card.open .skill-body { display: flex; }
+
+  .info-block h4 {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .info-block p {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.65;
+  }
+
+  .cap-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .cap-list li {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.5;
+  }
+  .cap-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    font-size: 10px;
+    top: 2px;
+  }
+
+  .kw-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .kw {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 500;
+    border: 1px solid;
+    cursor: default;
+  }
+
+  .gh-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    background: var(--bg3);
+    transition: all 0.18s;
+  }
+  .gh-link:hover { color: var(--text); border-color: #4a5568; }
+  .gh-link svg { width: 14px; height: 14px; }
+
+  /* ===== SKILL COLORS ===== */
+  .card-00 { border-top: 3px solid var(--c00); }
+  .card-00:hover { border-color: var(--c00); box-shadow: 0 8px 32px rgba(99,102,241,0.15); }
+  .card-00 .skill-icon { background: rgba(99,102,241,0.15); }
+  .card-00 .skill-id { color: var(--c00); }
+  .card-00 .skill-layer { background: rgba(99,102,241,0.15); color: #a5b4fc; }
+  .card-00 .cap-list li::before { color: var(--c00); }
+  .card-00 .kw { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.3); color: #a5b4fc; }
+
+  .card-01 { border-top: 3px solid var(--c01); }
+  .card-01:hover { border-color: var(--c01); box-shadow: 0 8px 32px rgba(245,158,11,0.15); }
+  .card-01 .skill-icon { background: rgba(245,158,11,0.15); }
+  .card-01 .skill-id { color: var(--c01); }
+  .card-01 .skill-layer { background: rgba(245,158,11,0.15); color: #fcd34d; }
+  .card-01 .cap-list li::before { color: var(--c01); }
+  .card-01 .kw { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: #fcd34d; }
+
+  .card-02 { border-top: 3px solid var(--c02); }
+  .card-02:hover { border-color: var(--c02); box-shadow: 0 8px 32px rgba(16,185,129,0.15); }
+  .card-02 .skill-icon { background: rgba(16,185,129,0.15); }
+  .card-02 .skill-id { color: var(--c02); }
+  .card-02 .skill-layer { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+  .card-02 .cap-list li::before { color: var(--c02); }
+  .card-02 .kw { background: rgba(16,185,129,0.1); border-color: rgba(16,185,129,0.3); color: #6ee7b7; }
+
+  .card-03 { border-top: 3px solid var(--c03); }
+  .card-03:hover { border-color: var(--c03); box-shadow: 0 8px 32px rgba(6,182,212,0.15); }
+  .card-03 .skill-icon { background: rgba(6,182,212,0.15); }
+  .card-03 .skill-id { color: var(--c03); }
+  .card-03 .skill-layer { background: rgba(6,182,212,0.15); color: #67e8f9; }
+  .card-03 .cap-list li::before { color: var(--c03); }
+  .card-03 .kw { background: rgba(6,182,212,0.1); border-color: rgba(6,182,212,0.3); color: #67e8f9; }
+
+  .card-04 { border-top: 3px solid var(--c04); }
+  .card-04:hover { border-color: var(--c04); box-shadow: 0 8px 32px rgba(139,92,246,0.15); }
+  .card-04 .skill-icon { background: rgba(139,92,246,0.15); }
+  .card-04 .skill-id { color: var(--c04); }
+  .card-04 .skill-layer { background: rgba(139,92,246,0.15); color: #c4b5fd; }
+  .card-04 .cap-list li::before { color: var(--c04); }
+  .card-04 .kw { background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.3); color: #c4b5fd; }
+
+  .card-05 { border-top: 3px solid var(--c05); }
+  .card-05:hover { border-color: var(--c05); box-shadow: 0 8px 32px rgba(239,68,68,0.15); }
+  .card-05 .skill-icon { background: rgba(239,68,68,0.15); }
+  .card-05 .skill-id { color: var(--c05); }
+  .card-05 .skill-layer { background: rgba(239,68,68,0.15); color: #fca5a5; }
+  .card-05 .cap-list li::before { color: var(--c05); }
+  .card-05 .kw { background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.3); color: #fca5a5; }
+
+  /* ===== FLOW SECTION ===== */
+  .flow-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 32px;
+  }
+  .flow-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 20px;
+  }
+
+  .flow-full {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    margin-bottom: 32px;
+    background: var(--bg3);
+    border-radius: 12px;
+    padding: 20px 16px;
+    overflow: hidden;
+  }
+
+  .flow-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 8px;
+    transition: background 0.18s;
+  }
+  .flow-node:hover { background: rgba(255,255,255,0.05); }
+
+  .flow-node .fn-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    border: 2px solid;
+  }
+  .flow-node .fn-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: center;
+    max-width: 70px;
+    line-height: 1.3;
+  }
+
+  .fn-00 .fn-badge { background: rgba(99,102,241,0.15); border-color: var(--c00); color: var(--c00); }
+  .fn-01 .fn-badge { background: rgba(245,158,11,0.15); border-color: var(--c01); color: var(--c01); }
+  .fn-02 .fn-badge { background: rgba(16,185,129,0.15); border-color: var(--c02); color: var(--c02); }
+  .fn-03 .fn-badge { background: rgba(6,182,212,0.15); border-color: var(--c03); color: var(--c03); }
+  .fn-04 .fn-badge { background: rgba(139,92,246,0.15); border-color: var(--c04); color: var(--c04); }
+  .fn-05 .fn-badge { background: rgba(239,68,68,0.15); border-color: var(--c05); color: var(--c05); }
+
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 2px;
+    color: var(--text-muted);
+    font-size: 18px;
+    margin-top: -16px;
+  }
+
+  .paths-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+
+  .path-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    transition: border-color 0.2s;
+  }
+  .path-card:hover { border-color: #4a5568; }
+  .path-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+  .path-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+  .path-flow {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .pf-node {
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid;
+  }
+  .pf-00 { background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.4); color: var(--c00); }
+  .pf-01 { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4); color: var(--c01); }
+  .pf-02 { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.4); color: var(--c02); }
+  .pf-03 { background: rgba(6,182,212,0.12); border-color: rgba(6,182,212,0.4); color: var(--c03); }
+  .pf-04 { background: rgba(139,92,246,0.12); border-color: rgba(139,92,246,0.4); color: var(--c04); }
+  .pf-05 { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.4); color: var(--c05); }
+  .pf-arrow { color: var(--text-muted); font-size: 13px; }
+
+  /* ===== HANDOFF SECTION ===== */
+  .handoff-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+  .handoff-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .handoff-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .hc-a::before { background: linear-gradient(90deg, var(--c00), var(--c03)); }
+  .hc-b::before { background: linear-gradient(90deg, var(--c03), var(--c04)); }
+  .hc-c::before { background: linear-gradient(90deg, var(--c04), var(--c05)); }
+  .hc-e::before { background: linear-gradient(90deg, var(--c05), var(--c02)); }
+
+  .handoff-id {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+    color: var(--text-dim);
+  }
+  .handoff-route {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .handoff-fields {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .hf {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+  }
+
+  /* ===== NOTES SECTION ===== */
+  .notes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .note-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex;
+    gap: 12px;
+  }
+  .note-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .note-text {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+  footer a { color: var(--c00); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ===== LAYER LEGEND ===== */
+  .layer-legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .layer-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .layer-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ===== EXPAND ALL BTN ===== */
+  .ctrl-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .ctrl-btn {
+    padding: 7px 16px;
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    color: var(--text-dim);
+    transition: all 0.18s;
+  }
+  .ctrl-btn:hover { color: var(--text); background: var(--bg3); border-color: #4a5568; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 640px) {
+    .topnav { padding: 0 12px; }
+    .hero { padding: 48px 16px 32px; }
+    .section { padding: 0 16px 48px; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .flow-full { padding: 16px 8px; }
+    .flow-arrow { font-size: 14px; }
+  }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .skill-card { animation: fadeInUp 0.4s ease both; }
+  .skill-card:nth-child(1) { animation-delay: 0.05s; }
+  .skill-card:nth-child(2) { animation-delay: 0.10s; }
+  .skill-card:nth-child(3) { animation-delay: 0.15s; }
+  .skill-card:nth-child(4) { animation-delay: 0.20s; }
+  .skill-card:nth-child(5) { animation-delay: 0.25s; }
+  .skill-card:nth-child(6) { animation-delay: 0.30s; }
+
+  .skill-body {
+    animation: none;
+  }
+  .skill-card.open .skill-body {
+    animation: fadeInUp 0.25s ease both;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <div class="nav-logo"><span>⬡</span> AI Skill 体系</div>
+  <a href="#overview" class="nav-btn">体系概览</a>
+  <a href="#skill-00" class="nav-btn s00">00 · Navigator</a>
+  <a href="#skill-01" class="nav-btn s01">01 · 提示词工程师</a>
+  <a href="#skill-02" class="nav-btn s02">02 · SOP 工程师</a>
+  <a href="#skill-03" class="nav-btn s03">03 · Scout</a>
+  <a href="#skill-04" class="nav-btn s04">04 · Planner</a>
+  <a href="#skill-05" class="nav-btn s05">05 · Validator</a>
+  <a href="#flows" class="nav-btn">使用流程</a>
+  <a href="#handoffs" class="nav-btn">交接包</a>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-badge">System v1.2.0 · LIVE</div>
+  <h1>六层 AI Skill 体系</h1>
+  <p class="hero-sub">六个专职 AI 角色协作完成从立项到上线的全流程<br>各司其职 · 精准协作 · 标准化交接</p>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-num">6</span><span class="stat-label">专职角色</span></div>
+    <div class="stat"><span class="stat-num">4</span><span class="stat-label">协作层级</span></div>
+    <div class="stat"><span class="stat-num">4</span><span class="stat-label">标准化交接包</span></div>
+    <div class="stat"><span class="stat-num">7+</span><span class="stat-label">支持平台</span></div>
+  </div>
+</header>
+
+<!-- OVERVIEW SECTION -->
+<section class="section" id="overview">
+  <div class="section-header">
+    <h2 class="section-title">体系概览</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="overview-grid">
+    <div class="overview-card">
+      <h3>核心理念</h3>
+      <div class="tag-row">
+        <span class="tag blue">各司其职</span>
+        <span class="tag blue">精准协作</span>
+        <span class="tag blue">标准化交接</span>
+      </div>
+    </div>
+    <div class="overview-card">
+      <h3>适用场景</h3>
+      <div class="tag-row">
+        <span class="tag">AI 智能体开发</span>
+        <span class="tag">Skill 工程化</span>
+        <span class="tag">技术选型</span>
+        <span class="tag">项目规划</span>
+        <span class="tag">质量验收</span>
+      </div>
+    </div>
+    <div class="overview-card">
+      <h3>支持平台</h3>
+      <div class="tag-row">
+        <span class="tag green">GPT</span>
+        <span class="tag green">Claude</span>
+        <span class="tag green">文心</span>
+        <span class="tag green">通义</span>
+        <span class="tag green">星火</span>
+        <span class="tag green">Gemini</span>
+        <span class="tag green">CodeBuddy</span>
+      </div>
+    </div>
+    <div class="overview-card">
+      <h3>层级架构</h3>
+      <div class="layer-legend">
+        <div class="layer-item"><div class="layer-dot" style="background:#6366f1"></div>L0 路由层</div>
+        <div class="layer-item"><div class="layer-dot" style="background:#f59e0b"></div>L1 理解加工层</div>
+        <div class="layer-item"><div class="layer-dot" style="background:#8b5cf6"></div>L2 构建层</div>
+        <div class="layer-item"><div class="layer-dot" style="background:#ef4444"></div>L3 验收层</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKILL CARDS -->
+  <div class="section-header">
+    <h2 class="section-title">六个 Skill 详情</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="ctrl-row">
+    <button class="ctrl-btn" onclick="expandAll()">全部展开</button>
+    <button class="ctrl-btn" onclick="collapseAll()">全部收起</button>
+  </div>
+
+  <div class="skills-grid">
+
+    <!-- SKILL 00 -->
+    <div class="skill-card card-00" id="skill-00">
+      <div class="skill-header" onclick="toggle(this)">
+        <div class="skill-icon">🧭</div>
+        <div class="skill-meta">
+          <div class="skill-id">SKILL 00</div>
+          <div class="skill-name">Navigator · 智能体导航官</div>
+          <span class="skill-layer">L0 路由层</span>
+        </div>
+        <div class="skill-chevron">›</div>
+      </div>
+      <div class="skill-body">
+        <div class="info-block">
+          <h4>核心价值</h4>
+          <p>不知从哪开始时的第一个入口，消除选择困难，智能路由至最合适的 Skill 组合</p>
+        </div>
+        <div class="info-block">
+          <h4>使用时机</h4>
+          <ul class="cap-list">
+            <li>有模糊想法，不确定用哪个 Skill</li>
+            <li>需要规划多 Skill 协作路径</li>
+            <li>第一次接触 AI Skill 体系</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h4>核心能力</h4>
+          <ul class="cap-list">
+            <li>意图识别（7 种意图类型）</li>
+            <li>置信度三级路由：≥80% 直接路由</li>
+            <li>置信度 60-79%：二次确认</li>
+            <li>&lt;60% 追问（最多 3 次）</li>
+            <li>单 / 多 Skill 组合路由</li>
+            <li>输出交接包A + pipeline 全链路规划</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h4>激活词</h4>
+          <div class="kw-row">
+            <span class="kw">帮我规划</span>
+            <span class="kw">不知从哪开始</span>
+            <span class="kw">推荐技能</span>
+          </div>
+        </div>
+        <div class="info-block">
+          <h4>输出物</h4>
+          <p>路由建议 + 交接包A（含 intent_type / pipeline 全链路规划）</p>
+        </div>
+        <div class="info-block">
+          <a href="https://github.com/letplaylimited-MARK/skill-00-navigator" target="_blank" class="gh-link">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            letplaylimited-MARK/skill-00-navigator
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILL 01 -->
+    <div class="skill-card card-01" id="skill-01">
+      <div class="skill-header" onclick="toggle(this)">
+        <div class="skill-icon">✨</div>
+        <div class="skill-meta">
+          <div class="skill-id">SKILL 01</div>
+          <div class="skill-name">超级提示词工程师</div>
+          <span class="skill-layer">L1 理解加工层</span>
+        </div>
+        <div class="skill-chevron">›</div>
+      </div>
+      <div class="skill-body">
+        <div class="info-block">
+          <h4>核心价值</h4>
+          <p>让提示词从「能用」升级为「专业」，系统化设计 AI 行为规范，建立可复用的提示词标准</p>
+        </div>
+        <div class="info-block">
+          <h4>使用时机</h4>
+          <ul class="cap-list">
+            <li>提示词效果不好，需要优化</li>
+            <li>从零设计系统提示词</li>
+            <li>需要优化 AI 角色定义与行为规范</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h4>核心能力</h4>
+          <ul class="cap-list">
+            <li>深度解构现有提示词（识别缺陷）</li>
+            <li>ROLE / TASK / CONTEXT / FORMAT 四维设计</li>
+            <li>多轮迭代优化闭环</li>
+            <li>生成测试用例验证效果</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h4>激活词</h4>
+          <div class="kw-row">
+            <span class="kw">优化提示词</span>
+            <span class="kw">提示词效果不好</span>
+            <span class="kw">写系统提示词</span>
+          </div>
+        </div>
+        <div class="info-block">
+          <h4>输出物</h4>
+          <p>优化后系统提示词 + 修改说明 + 测试用例</p>
+        </div>
+        <div class="info-block">
+          <a href="https://github.com/letplaylimited-MARK/super-prompt-engineer-skill" target="_blank" class="gh-link">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            letplaylimited-MARK/super-prompt-engineer-skill
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILL 02 -->
+    <div class="skill-card card-02" id="skill-02">
+      <div class="skill-header" onclick="toggle(this)">
+        <div class="skill-icon">⚙️</div>
+        <div class="skill-meta">
+          <div class="skill-id">SKILL 02</div>
+          <div class="skill-name">SOP 工程师</div>
+          <span class="skill-layer">L1 理解加工层</span>
+        </div>
+        <div class="skill-chevron">›</div>
+      </div>
+      <div class="skill-body">
+        <div class="info-block">
+          <h4>核心价值</h4>
+          <p>将零散的想法 / 提示词工程化为可复用、可分发的标准 Skill 工程包，打通从想法到产品的最后一公里</p>
+        </div>
+        <div class="info-block">
+          <h4>使用时机</h4>
+          <ul class="cap-list">
+            <li>想把提示词打包成完整 Skill</li>
+            <li>工程化标准化已有 AI 能力</li>
+            <li>需要开发新 Skill 从零到完整</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h4>核心能力</h4>
+          <ul class="cap-list">
+            <li>10 阶段标准开发工作流</li>
+            <li>生成完整工程包（SKILL.md / system-prompt / sub-skills / deploy / docs）</li>
+            <li>自举式测试验证机制</li>
+            <li>阶段门控质量把关</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h4>激活词</h4>
+          <div class="kw-row">
+            <span class="kw">做成Skill</span>
+            <span class="kw">工程化</span>
+            <span class="kw">打包</span>
+            <span class="kw">Skill开发</span>
+          </div>
+        </div>
+        <div class="info-block">
+          <h4>输出物</h4>
+          <p>完整 Skill 工程包（含所有文件结构）</p>
+        </div>
+        <div class="info-block">
+          <a href="https://github.com/letplaylimited-MARK/skill-dev-sop-skill" target="_blank" class="gh-link">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            letplaylimited-MARK/skill-dev-sop-skill
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILL 03 -->
+    <div class="skill-card card-03" id="skill-03">
+      <div class="skill-header" onclick="toggle(this)">
+        <div class="skill-icon">🔍</div>
+        <div class="skill-meta">
+          <div class="skill-id">SKILL 03</div>
+          <div class="skill-name">Scout · 开源侦察官</div>
+          <span class="skill-layer">L1 理解加工层</span>
+        </div>
+        <div class="skill-chevron">›</div>
+      </div>
+      <div class="skill-body">
+        <div class="info-block">
+          <h4>核心价值</h4>
+          <p>用七维度科学评估代替「凭感觉选库」，提供有数据支撑的技术选型方案，避免选型失误</p>
+        </div>
+        <div class="info-block">
+          <h4>使用时机</h4>
+          <ul class="cap-list">
+            <li>需要找开源库 / 框架 / 工具</li>
+            <li>不知道用什么技术栈</li>
+            <li>需要系统性技术评估报告</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h4>核心能力</h4>
+          <ul class="cap-list">
+            <li>REQ-XXX 需求拆解标准化</li>
+            <li>七维度评估矩阵：功能30% / 易用20% / 性能15% / 可维护10% / 社区10% / 兼容10% / 文档5%</li>
+            <li>幻觉防护（Star数/版本号标注，需用户核实）</li>
+            <li>降级路径：找不到时给出 3 条备选</li>
+            <li>4阶段流程：需求理解→开源搜索→七维评估→交接包输出</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h4>激活词</h4>
+          <div class="kw-row">
+            <span class="kw">找开源库</span>
+            <span class="kw">技术选型</span>
+            <span class="kw">用什么框架</span>
+            <span class="kw">推荐工具</span>
+          </div>
+        </div>
+        <div class="info-block">
+          <h4>输出物</h4>
+          <p>选型报告 + 交接包B（含 selected_skills / sop_hint 模块建议）</p>
+        </div>
+        <div class="info-block">
+          <a href="https://github.com/letplaylimited-MARK/skill-03-scout" target="_blank" class="gh-link">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            letplaylimited-MARK/skill-03-scout
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILL 04 -->
+    <div class="skill-card card-04" id="skill-04">
+      <div class="skill-header" onclick="toggle(this)">
+        <div class="skill-icon">📋</div>
+        <div class="skill-meta">
+          <div class="skill-id">SKILL 04</div>
+          <div class="skill-name">Planner · 执行规划官</div>
+          <span class="skill-layer">L2 构建层</span>
+        </div>
+        <div class="skill-chevron">›</div>
+      </div>
+      <div class="skill-body">
+        <div class="info-block">
+          <h4>核心价值</h4>
+          <p>将抽象的 SOP 转化为任何人都能按步骤执行的操作手册，消除「知道做什么但不知道怎么做」的困境</p>
+        </div>
+        <div class="info-block">
+          <h4>使用时机</h4>
+          <ul class="cap-list">
+            <li>有 SOP 或需求但不知如何落地</li>
+            <li>需要生成详细部署步骤</li>
+            <li>需要项目执行计划与时间估算</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h4>核心能力</h4>
+          <ul class="cap-list">
+            <li>P-T-S 三层结构（Phase / Task / Step，编号 P1-T2-S3）</li>
+            <li>每个 Step 含：工具 / 操作 / 预期结果 / 验证 / 估时 / 依赖</li>
+            <li>PERT 三点估时（乐观 / 正常 / 悲观）</li>
+            <li>断点恢复机制（.project_state 状态文件）</li>
+            <li>三不原则：不过度设计 / 不静默调整SOP决策 / 不跳过验证</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h4>激活词</h4>
+          <div class="kw-row">
+            <span class="kw">执行计划</span>
+            <span class="kw">操作手册</span>
+            <span class="kw">怎么落地</span>
+            <span class="kw">生成步骤</span>
+          </div>
+        </div>
+        <div class="info-block">
+          <h4>输出物</h4>
+          <p>完整 Markdown 操作手册 + 交接包C（含 test_targets / total_phases）</p>
+        </div>
+        <div class="info-block">
+          <a href="https://github.com/letplaylimited-MARK/skill-04-planner" target="_blank" class="gh-link">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            letplaylimited-MARK/skill-04-planner
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILL 05 -->
+    <div class="skill-card card-05" id="skill-05">
+      <div class="skill-header" onclick="toggle(this)">
+        <div class="skill-icon">✅</div>
+        <div class="skill-meta">
+          <div class="skill-id">SKILL 05</div>
+          <div class="skill-name">Validator · 测试验收工程师</div>
+          <span class="skill-layer">L3 验收层</span>
+        </div>
+        <div class="skill-chevron">›</div>
+      </div>
+      <div class="skill-body">
+        <div class="info-block">
+          <h4>核心价值</h4>
+          <p>发布前的最后质量门禁，用量化评分取代主观判断，缺陷模式归档驱动体系持续改进</p>
+        </div>
+        <div class="info-block">
+          <h4>使用时机</h4>
+          <ul class="cap-list">
+            <li>项目 / Skill 完成后上线前</li>
+            <li>需要量化质量评估报告</li>
+            <li>发布决策需要数据支撑</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h4>核心能力</h4>
+          <ul class="cap-list">
+            <li>五维度量化评分：功能40% / 文档25% / 可执行性20% / 接口10% / 安全5%</li>
+            <li>P0-P3 缺陷分级（P0 阻塞 → FAIL）</li>
+            <li>三档发布决策：PASS(≥80%,P0=P1=0) / CONDITIONAL_PASS(≥70%,P1≤3) / FAIL</li>
+            <li>飞轮机制：缺陷归档 → 上游 Skill 改进建议</li>
+          </ul>
+        </div>
+        <div class="info-block">
+          <h4>激活词</h4>
+          <div class="kw-row">
+            <span class="kw">验收</span>
+            <span class="kw">质量检查</span>
+            <span class="kw">发布前检查</span>
+            <span class="kw">可以发布了吗</span>
+          </div>
+        </div>
+        <div class="info-block">
+          <h4>输出物</h4>
+          <p>验收报告 + 交接包E（含 decision / composite_score / flywheel 改进建议）</p>
+        </div>
+        <div class="info-block">
+          <a href="https://github.com/letplaylimited-MARK/skill-05-validator" target="_blank" class="gh-link">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            letplaylimited-MARK/skill-05-validator
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FLOW SECTION -->
+<section class="section" id="flows">
+  <div class="section-header">
+    <h2 class="section-title">使用流程</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="flow-section">
+    <div class="flow-title">完整路径（全流程）</div>
+    <div class="flow-full">
+      <div class="flow-node fn-00" onclick="scrollTo('#skill-00')">
+        <div class="fn-badge">00</div>
+        <div class="fn-label">Navigator</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node fn-01" onclick="scrollTo('#skill-01')">
+        <div class="fn-badge">01</div>
+        <div class="fn-label">提示词工程师</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node fn-03" onclick="scrollTo('#skill-03')">
+        <div class="fn-badge">03</div>
+        <div class="fn-label">Scout</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node fn-02" onclick="scrollTo('#skill-02')">
+        <div class="fn-badge">02</div>
+        <div class="fn-label">SOP 工程师</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node fn-04" onclick="scrollTo('#skill-04')">
+        <div class="fn-badge">04</div>
+        <div class="fn-label">Planner</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node fn-05" onclick="scrollTo('#skill-05')">
+        <div class="fn-badge">05</div>
+        <div class="fn-label">Validator</div>
+      </div>
+    </div>
+
+    <div class="flow-title">快捷路径</div>
+    <div class="paths-grid">
+      <div class="path-card">
+        <div class="path-label">路径 A · 技术选型</div>
+        <div class="path-desc">需要开源方案时</div>
+        <div class="path-flow">
+          <span class="pf-node pf-03">03 Scout</span>
+          <span class="pf-arrow">→</span>
+          <span class="pf-node pf-04">04 Planner</span>
+        </div>
+      </div>
+      <div class="path-card">
+        <div class="path-label">路径 B · 提示词优化</div>
+        <div class="path-desc">优化提示词并打包时</div>
+        <div class="path-flow">
+          <span class="pf-node pf-01">01 提示词</span>
+          <span class="pf-arrow">→</span>
+          <span class="pf-node pf-02">02 SOP</span>
+        </div>
+      </div>
+      <div class="path-card">
+        <div class="path-label">路径 C · 验收发布</div>
+        <div class="path-desc">已有工程包，上线前验收</div>
+        <div class="path-flow">
+          <span class="pf-node pf-05">05 Validator</span>
+        </div>
+      </div>
+      <div class="path-card">
+        <div class="path-label">路径 D · 完整开发</div>
+        <div class="path-desc">标准 Skill 开发流程</div>
+        <div class="path-flow">
+          <span class="pf-node pf-00">00</span>
+          <span class="pf-arrow">→</span>
+          <span class="pf-node pf-03">03</span>
+          <span class="pf-arrow">→</span>
+          <span class="pf-node pf-02">02</span>
+          <span class="pf-arrow">→</span>
+          <span class="pf-node pf-04">04</span>
+          <span class="pf-arrow">→</span>
+          <span class="pf-node pf-05">05</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HANDOFF SECTION -->
+<section class="section" id="handoffs">
+  <div class="section-header">
+    <h2 class="section-title">交接包流转</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="handoff-grid">
+    <div class="handoff-card hc-a">
+      <div class="handoff-id">交接包 A</div>
+      <div class="handoff-route">Skill 00 → Skill 03 / 04</div>
+      <div class="handoff-fields">
+        <span class="hf">intent_type</span>
+        <span class="hf">pipeline</span>
+        <span class="hf">confidence</span>
+        <span class="hf">user_goal</span>
+      </div>
+    </div>
+    <div class="handoff-card hc-b">
+      <div class="handoff-id">交接包 B</div>
+      <div class="handoff-route">Skill 03 → Skill 04</div>
+      <div class="handoff-fields">
+        <span class="hf">selected_skills</span>
+        <span class="hf">sop_hint</span>
+        <span class="hf">eval_matrix</span>
+        <span class="hf">requirements</span>
+      </div>
+    </div>
+    <div class="handoff-card hc-c">
+      <div class="handoff-id">交接包 C</div>
+      <div class="handoff-route">Skill 04 → Skill 05</div>
+      <div class="handoff-fields">
+        <span class="hf">test_targets</span>
+        <span class="hf">total_phases</span>
+        <span class="hf">plan_version</span>
+        <span class="hf">dependencies</span>
+      </div>
+    </div>
+    <div class="handoff-card hc-e">
+      <div class="handoff-id">交接包 E</div>
+      <div class="handoff-route">Skill 05 → 用户</div>
+      <div class="handoff-fields">
+        <span class="hf">decision</span>
+        <span class="hf">composite_score</span>
+        <span class="hf">flywheel</span>
+        <span class="hf">defects_p0</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NOTES SECTION -->
+<section class="section" id="notes">
+  <div class="section-header">
+    <h2 class="section-title">使用注意事项</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="notes-grid">
+    <div class="note-card">
+      <div class="note-icon">💬</div>
+      <div class="note-text"><strong>独立对话</strong><br>每个 Skill 使用独立的对话窗口，避免上下文污染</div>
+    </div>
+    <div class="note-card">
+      <div class="note-icon">📋</div>
+      <div class="note-text"><strong>完整激活</strong><br>复制完整激活卡内容粘贴，不要只复制关键词</div>
+    </div>
+    <div class="note-card">
+      <div class="note-icon">🔍</div>
+      <div class="note-text"><strong>核实数据</strong><br>Skill 03 的开源数据（Star 数 / 版本号）需自行到 GitHub 核实</div>
+    </div>
+    <div class="note-card">
+      <div class="note-icon">💾</div>
+      <div class="note-text"><strong>保存交接包</strong><br>保存每步输出的交接包内容，以便中断后恢复流程</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>六层 AI Skill 体系 · System v1.2.0 &nbsp;·&nbsp; 六个专职 AI 角色 &nbsp;·&nbsp; 标准化全流程协作</p>
+  <p style="margin-top:8px;color:#4a5568;">各 Skill 仓库见各卡片 GitHub 链接 &nbsp;·&nbsp; 模型无关设计，支持全平台部署</p>
+</footer>
+
+<script>
+  function toggle(header) {
+    const card = header.closest('.skill-card');
+    card.classList.toggle('open');
+  }
+
+  function expandAll() {
+    document.querySelectorAll('.skill-card').forEach(c => c.classList.add('open'));
+  }
+
+  function collapseAll() {
+    document.querySelectorAll('.skill-card').forEach(c => c.classList.remove('open'));
+  }
+
+  function scrollTo(selector) {
+    const el = document.querySelector(selector);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // Nav smooth scroll
+  document.querySelectorAll('.nav-btn[href^="#"]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(btn.getAttribute('href'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+
+  // Flow nodes scroll
+  document.querySelectorAll('.flow-node').forEach(node => {
+    node.style.cursor = 'pointer';
+    const label = node.querySelector('.fn-label');
+    const skillId = node.className.match(/fn-(\d+)/)?.[1];
+    if (skillId !== undefined) {
+      node.addEventListener('click', () => {
+        const el = document.getElementById('skill-0' + skillId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          // Auto-open the card
+          if (!el.classList.contains('open')) el.classList.add('open');
+        }
+      });
+    }
+  });
+</script>
+</body>
+</html>
