@@ -1,5 +1,5 @@
 # AI Skill 体系 · 自主迭代飞轮机制
-## flywheel-mechanism v1.1.0
+## flywheel-mechanism v1.2.0
 
 ---
 
@@ -7,6 +7,11 @@
 
 ```
 [触发层] ─────────────────────────────────────────────
+  │
+  ├── 触发-1：技能圆桌预检（Skill Council）★新增
+  │          每次新需求输入后自动触发
+  │          六角色代表发言 → 圆桌共识报告 → 用户确认路径
+  │          Package-Council 输出后进入正式执行链路
   │
   ├── 触发0：主动沙盘压测（见 sandbox-framework.md）★新增
   │         设计压测场景 → 冷推演 → 热推演 → 发现盲区
@@ -237,6 +242,7 @@ feedback_packet:
 
 ---
 
-*本文档版本：flywheel-mechanism v1.1.0*
+*本文档版本：flywheel-mechanism v1.2.0*
 *v1.1.0 变更：新增触发0（主动沙盘压测）、新增第七节主被动对比*
+*v1.2.0 变更：新增触发-1（技能圆桌预检），在触发0之前触发，覆盖执行前预检层*
 *与 system-changelog.md、MASTER-BLUEPRINT.md、sandbox-framework.md 共同构成体系治理文档*

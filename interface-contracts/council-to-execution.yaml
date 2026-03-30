@@ -1,0 +1,155 @@
+# 接口契约：圆桌研讨 → 正式执行
+# council-to-execution.yaml v1.0.0
+# 定义 Package-Council 的完整 schema
+
+contract:
+  name: "council-to-execution"
+  version: "1.0.0"
+  description: "技能圆桌（Skill Council）产出物传递至正式执行链路的接口契约"
+  from: "skill-system-coordinator"
+  to: "execution-chain-start"
+
+# ─── Package-Council 完整 Schema ──────────────────────────────────────────────
+
+schema:
+  council_package:
+    schema_version:
+      type: string
+      required: true
+      value: "1.0"
+    
+    package_type:
+      type: string
+      required: true
+      value: "council_meeting"
+    
+    created_at:
+      type: string
+      required: true
+      format: "YYYY-MM-DD"
+    
+    user_need_raw:
+      type: string
+      required: true
+      description: "用户原始输入，逐字记录，不做解读"
+    
+    representative_statements:
+      type: object
+      required: true
+      description: "六个角色代表的发言内容"
+      fields:
+        skill_XX:
+          interpretation:
+            type: string
+            required: true
+            description: "该角色从专业视角对需求的解读"
+          capability_can:
+            type: string
+            required: true
+            description: "该角色能做好的部分"
+          capability_cannot:
+            type: string
+            required: true
+            min_length: 10
+            description: "该角色做不到的部分（禁止空置或万能语句）"
+          risk_flag:
+            type: string
+            required: true
+            description: "该角色预警的主要风险"
+          cross_skill_note:
+            type: string
+            required: false
+            description: "对兄弟角色的期望或质疑"
+    
+    consensus:
+      type: object
+      required: true
+      fields:
+        agreed_path:
+          type: array
+          required: true
+          items: string
+          description: "推荐的执行路径，如 ['skill-03', 'skill-04', 'skill-05']"
+        key_agreements:
+          type: array
+          required: true
+          items: string
+          min_items: 1
+          description: "圆桌达成的关键共识，至少一条"
+        dissent_points:
+          type: array
+          required: false
+          items: string
+          description: "仍存在分歧的问题，可为空"
+    
+    risk_register:
+      type: array
+      required: false
+      items:
+        risk_id:
+          type: string
+          format: "CR-NNN"
+        raised_by:
+          type: string
+          format: "skill-XX"
+        description:
+          type: string
+          required: true
+        severity:
+          type: string
+          enum: ["P0", "P1", "P2"]
+        mitigation:
+          type: string
+          required: true
+    
+    user_confirmation_required:
+      type: boolean
+      required: true
+      value: true
+      description: "圆桌结束后必须等待用户确认路径才可执行"
+    
+    recommended_next:
+      type: string
+      required: true
+      description: "告知用户下一步操作的说明"
+
+# ─── 验证规则 ──────────────────────────────────────────────────────────────────
+
+validation_rules:
+  - rule: "capability_cannot 字段不得空置"
+    check: "representative_statements.*.capability_cannot.length > 0"
+    error_code: "CC-001"
+    message: "每个角色代表必须声明至少一条自己的局限，不得使用'我能处理各种情况'等万能语句"
+  
+  - rule: "六个角色都必须发言"
+    check: "representative_statements 包含 skill_00_navigator, skill_01_prompt_engineer, skill_02_sop_engineer, skill_03_scout, skill_04_planner, skill_05_validator"
+    error_code: "CC-002"
+    message: "圆桌要求六个角色全员到场，不允许缺席"
+  
+  - rule: "推荐路径不得为空"
+    check: "consensus.agreed_path.length >= 1"
+    error_code: "CC-003"
+    message: "圆桌必须输出至少一个推荐执行路径"
+  
+  - rule: "用户确认标志必须为 true"
+    check: "user_confirmation_required == true"
+    error_code: "CC-004"
+    message: "圆桌产出物必须等待用户确认，禁止自动跳转执行"
+
+# ─── 与现有接口契约的关系 ─────────────────────────────────────────────────────
+
+relationship_to_existing_contracts:
+  position: "council-to-execution 在所有现有接口之前触发"
+  next_contract: "s00-to-any.yaml（用户确认路径后触发）"
+  override_rule: "若用户明确跳过圆桌（说「跳过圆桌直接执行」），直接进入 s00-to-any 流程"
+
+# ─── 元数据 ───────────────────────────────────────────────────────────────────
+
+metadata:
+  created_at: "2025"
+  introduced_in: "System v1.4.0"
+  maintained_by: "letplaylimited-MARK"
+  related_files:
+    - "SUPER-SYSTEM-PROMPT.md Part 11"
+    - "SUPER-SYSTEM-PROMPT.md Part 12"
+    - "skill-XX/council-role.md"

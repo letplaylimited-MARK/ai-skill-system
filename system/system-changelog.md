@@ -53,7 +53,31 @@
 
 ---
 
-## System v1.3.0 — 2025年（当前版本）
+## System v1.4.0 — 2025年（当前版本）
+
+### 里程碑：技能圆桌 + 双重自我批判机制（Skill Council v1.0）
+
+本次更新引入「执行前圆桌研讨」和「双重批判层」两大机制，让六个 AI 角色在执行之前先开会研讨，并在执行过程中主动批判自己的输出。
+
+| 新增/变更文档 | 说明 |
+|---|---|
+| `SUPER-SYSTEM-PROMPT.md` Part 11（新增）| 技能圆桌机制：自动触发规则、六角色深度发言结构（视角解读/能力边界/执行预警/跨角色期望）、协调官主持规则、Package-Council YAML 模板 |
+| `SUPER-SYSTEM-PROMPT.md` Part 12（新增）| 双重批判层：圆桌内自我边界声明（Phase 1）+ 执行后三问自审（Phase 2）、交接包 schema v1.1（新增 self_review + downstream_notes 字段）、EG-07/EG-08 防错护栏 |
+| `skill-00-navigator/council-role.md`（新建）| S00 圆桌发言框架：全局路径规划师视角、路由局限声明、典型质疑点 |
+| `skill-03-scout/council-role.md`（新建）| S03 圆桌发言框架：技术选型与外部依赖视角、数据时效性局限声明、授权协议预警 |
+| `skill-04-planner/council-role.md`（新建）| S04 圆桌发言框架：可执行性与步骤完整性视角、平台适配局限声明、业务规则边界 |
+| `skill-05-validator/council-role.md`（新建）| S05 圆桌发言框架：质量底线与验收标准视角、不可自审声明、边界测试预警 |
+| `interface-contracts/council-to-execution.yaml`（新建）| Package-Council 接口契约，定义圆桌产出物的完整 schema 和四条验证规则（CC-001~CC-004）|
+| `system/flywheel-mechanism.md`（v1.1→v1.2）| 触发层新增「触发-1：技能圆桌预检」，在触发0沙盘之前，覆盖执行前预检层 |
+
+**设计原则**：
+- 圆桌自动触发，无需用户显式调用（说「跳过圆桌」才豁免）
+- 六角色全员发言，`capability_cannot` 字段强制填写（防空洞批判）
+- 交接包向后兼容（v1.0 仍有效，v1.1 可选字段鼓励使用）
+
+---
+
+## System v1.3.0 — 2025年
 
 ### 里程碑：引入沙盘推演框架 · 巩固而非堆砌
 
