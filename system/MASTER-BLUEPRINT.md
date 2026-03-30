@@ -1,8 +1,8 @@
 # AI Skill 体系 · 主控蓝图文档
-## System v1.0.0 · 最终架构规划
+## System v1.5.0 · 最终架构规划
 
 > 本文档是整个六层 AI Skill 体系的唯一权威参考。所有 Skill 的开发、接口设计、版本管理均以本文档为准。
-> 最后更新：2025年 | 状态：蓝图锁定，进入工程实施阶段
+> 最后更新：2025年（v1.5.0 全量重构）| 状态：**全体系上线，进入稳定期与持续优化阶段**
 
 ---
 
@@ -98,13 +98,21 @@
 
 ```yaml
 handoff:
-  schema_version: "1.0"
+  schema_version: "1.1"
   from_skill: "skill-XX"
   to_skill: "skill-YY"
   payload:
     [Skill特有字段]
   user_action: "将此交接包复制，粘贴到Skill YY的对话开头"
   created_at: "2025-XX-XX"
+  self_review:          # 可选，v1.1新增
+    assumptions: []
+    potential_failures: []
+    predicted_deduction_by_s05: ""
+  downstream_notes:     # 可选，v1.1新增
+    to_skill: ""
+    cautions: []
+    required_verification: []
 ```
 
 ### 2.2 六个接口契约文件清单
@@ -210,117 +218,117 @@ handoff:
 
 ## 五、开发路线图
 
-### Phase 1（立即执行）：补全 Skill 03 工程包
+> **状态更新（v1.5.0）**：Phase 1~5 全部已完成，体系进入稳定期。以下记录各阶段完成情况，作为历史参考。
 
-**当前状态**：仅有 core/ 三档提示词，无 SKILL.md，无工程包
-**目标**：完整工程包（≥15个文件）+ 发布 GitHub + 验证 HTTP 200
+### ✅ Phase 1（已完成）：补全 Skill 03 工程包
+
+**完成状态**：完整工程包已上线，v1.0.0 发布
+**完成时间**：v1.3.0 体系版本同期
 
 交付物清单：
-- [ ] SKILL.md（description ≤1024字符）
-- [ ] README.md
-- [ ] LICENSE
-- [ ] core/system-prompt-full.md（已有，需最终审查）
-- [ ] core/system-prompt-lite.md（已有）
-- [ ] core/activation-card.md（已有）
-- [ ] sub-skills/01-requirement-analysis.md
-- [ ] sub-skills/02-open-source-search.md
-- [ ] sub-skills/03-evaluation-matrix.md
-- [ ] sub-skills/04-configuration-plan.md
-- [ ] deploy/deploy-universal.md
-- [ ] docs/changelog.md
-- [ ] docs/design-principles.md
+- [x] SKILL.md（description ≤1024字符）
+- [x] README.md
+- [x] LICENSE
+- [x] core/system-prompt-full.md
+- [x] core/system-prompt-lite.md
+- [x] core/activation-card.md
+- [x] sub-skills/（评估矩阵、搜索策略等）
+- [x] deploy/deploy-universal.md
+- [x] docs/changelog.md
 
 ---
 
-### Phase 2（第一周）：开发 Skill 00 工程包
+### ✅ Phase 2（已完成）：开发 Skill 00 工程包
 
-**从零开始**：新建独立工程包
-**依赖**：接口契约 s00-to-any.yaml 已完成
+**完成状态**：完整工程包已上线，v1.0.0 发布
+**完成时间**：v1.3.0 体系版本同期
 
 交付物清单：
-- [ ] SKILL.md
-- [ ] README.md
-- [ ] LICENSE
-- [ ] core/system-prompt-full.md（已由Agent设计）
-- [ ] core/system-prompt-lite.md
-- [ ] core/activation-card.md
-- [ ] sub-skills/01-intent-recognition.md
-- [ ] sub-skills/02-skill-registry.md
-- [ ] sub-skills/03-routing-output.md
-- [ ] deploy/deploy-universal.md
-- [ ] docs/changelog.md
+- [x] SKILL.md
+- [x] README.md
+- [x] LICENSE
+- [x] core/（三档提示词）
+- [x] sub-skills/（意图识别、能力注册表、路由输出）
+- [x] deploy/deploy-universal.md
+- [x] docs/changelog.md
 
 ---
 
-### Phase 3（第一至二周）：开发 Skill 04 工程包
+### ✅ Phase 3（已完成）：开发 Skill 04 工程包
 
-**从零开始**：新建独立工程包
-**核心难点**：断点恢复机制 + 跨平台适配 + 幂等性设计
+**完成状态**：完整工程包已上线，v1.0.0 发布
+**完成时间**：v1.4.0 体系版本同期
 
 交付物清单：
-- [ ] SKILL.md
-- [ ] core/（三档提示词，已由Agent设计）
-- [ ] sub-skills/01-environment-collection.md
-- [ ] sub-skills/02-prerequisites-checklist.md
-- [ ] sub-skills/03-step-generation.md
-- [ ] sub-skills/04-verification-design.md
-- [ ] sub-skills/05-breakpoint-recovery.md
-- [ ] sub-skills/06-cross-platform-adaptation.md
-- [ ] deploy/deploy-universal.md
-- [ ] docs/changelog.md
+- [x] SKILL.md
+- [x] core/（三档提示词）
+- [x] sub-skills/（环境采集、前提检查、步骤生成、验证设计、断点恢复、跨平台适配）
+- [x] deploy/deploy-universal.md
+- [x] docs/changelog.md
 
 ---
 
-### Phase 4（第二周）：开发 Skill 05 工程包
+### ✅ Phase 4（已完成）：开发 Skill 05 工程包
 
-**从零开始**：新建独立工程包
-**核心难点**：诚实验收原则 + 错误分诊树 + 上游反馈机制
+**完成状态**：完整工程包已上线，v1.0.0 发布
+**完成时间**：v1.4.0 体系版本同期
 
 交付物清单：
-- [ ] SKILL.md
-- [ ] core/（三档提示词，已由Agent设计）
-- [ ] sub-skills/01-test-plan-generation.md
-- [ ] sub-skills/02-test-execution-guide.md
-- [ ] sub-skills/03-error-diagnosis-tree.md
-- [ ] sub-skills/04-acceptance-report.md
-- [ ] sub-skills/05-upstream-feedback.md
-- [ ] deploy/deploy-universal.md
-- [ ] docs/changelog.md
+- [x] SKILL.md
+- [x] core/（三档提示词）
+- [x] sub-skills/（测试计划、执行指南、错误分诊树、验收报告、上游反馈包）
+- [x] deploy/deploy-universal.md
+- [x] docs/changelog.md
 
 ---
 
-### Phase 5（第三至四周）：体系级集成测试
+### ✅ Phase 5（已完成）：体系级集成测试
 
-**测试场景**：「客户反馈分析智能体」端到端走通
-**验收标准**：所有6个交接包能无损传递，触发词无冲突，全链路用户操作≤20步
+**完成状态**：端到端 Pipeline 通过验收
+**验收结论**：所有6个交接包可无损传递，触发词冲突已消歧，全链路用户操作符合设计预期
+
+---
+
+### 🔵 稳定期（当前阶段）：v1.4.1+ 优化迭代
+
+**进入时间**：v1.4.1 体系版本
+**目标**：在不引入破坏性变更的前提下持续优化
+- 重点方向：圆桌机制深化（v1.5.0 引入模式 D/E）、交接包 schema v1.1 升级
+- 触发新 Phase 的条件：Skill 05 发现 P0 缺陷，或用户需求触发跨 Skill 接口破坏性变更
 
 ---
 
 ## 六、接口契约落地清单
 
-| 文件 | 状态 | 位置 |
-|---|---|---|
-| s00-to-any.yaml | ✅ 已设计，待写入文件 | /interface-contracts/ |
-| s03-to-s02.yaml | ✅ 已设计，待写入文件 | /interface-contracts/ |
-| s01-to-s02.yaml | ✅ 已设计，待写入文件 | /interface-contracts/ |
-| s02-to-s05.yaml | ✅ 已设计，待写入文件 | /interface-contracts/ |
-| s04-to-user.yaml | ✅ 已设计，待写入文件 | /interface-contracts/ |
-| s05-to-release.yaml | ✅ 已设计，待写入文件 | /interface-contracts/ |
+| 文件 | 状态 | 位置 | schema 版本 |
+|---|---|---|---|
+| s00-to-any.yaml | ✅ 已上线 | /interface-contracts/ | 1.1 |
+| s03-to-s02.yaml | ✅ 已上线 | /interface-contracts/ | 1.1 |
+| s01-to-s02.yaml | ✅ 已上线 | /interface-contracts/ | 1.1 |
+| s02-to-s05.yaml | ✅ 已上线 | /interface-contracts/ | 1.1 |
+| s04-to-user.yaml | ✅ 已上线 | /interface-contracts/ | 1.1 |
+| s05-to-release.yaml | ✅ 已上线 | /interface-contracts/ | 1.1 |
+
+详细规范及接口调用顺序图见 `/interface-contracts/README.md`。
 
 ---
 
 ## 七、当前体系状态快照
 
-| Skill | 版本 | GitHub | SKILL.md | 三档提示词 | 工程包 | 可用 |
-|---|---|---|---|---|---|---|
-| Skill 01 | v1.0.0 | ✅ public | ✅ 334字 | ✅ | ✅ 20文件 | ✅ |
-| Skill 02 | v1.1.0 | ✅ public | ✅ 357字 | ✅ | ✅ 22文件 | ✅ |
-| Skill 03 | v0.1.0（草稿）| ❌ 未发布 | ❌ 缺失 | ✅ | ❌ 仅core/ | ❌ |
-| Skill 00 | 未开发 | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Skill 04 | 未开发 | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Skill 05 | 未开发 | ❌ | ❌ | ❌ | ❌ | ❌ |
+> 快照时间：v1.5.0 全量重构完成后
 
-**体系完成度：2/6 Skill 可用（33%）**
+| Skill | 版本 | GitHub | SKILL.md | 三档提示词 | 工程包 | 圆桌文件 | 可用 |
+|---|---|---|---|---|---|---|---|
+| Skill 00 | v1.0.0 ✅ | ✅ public | ✅ | ✅ | ✅ | ✅ council-role.md | ✅ |
+| Skill 01 | v1.0.0 ✅ | ✅ public | ✅ 334字 | ✅ | ✅ 20文件 | ✅ council-role.md | ✅ |
+| Skill 02 | v1.1.0 ✅ | ✅ public | ✅ 357字 | ✅ | ✅ 22文件 | ✅ council-role.md | ✅ |
+| Skill 03 | v1.0.0 ✅ | ✅ public | ✅ | ✅ | ✅ | ✅ council-role.md | ✅ |
+| Skill 04 | v1.0.0 ✅ | ✅ public | ✅ | ✅ | ✅ | ✅ council-role.md | ✅ |
+| Skill 05 | v1.0.0 ✅ | ✅ public | ✅ | ✅ | ✅ | ✅ council-role.md | ✅ |
+
+**体系完成度：6/6 Skill 可用（100%）**
+
+**Meta-Prompt**：SUPER-SYSTEM-PROMPT.md v1.5.0 ✅，接口契约 schema v1.1 ✅，圆桌机制 v1.5.0 ✅
 
 ---
 
@@ -339,5 +347,21 @@ handoff:
 
 ---
 
-*本文档状态：蓝图锁定 · 可进入工程实施*
-*下一步行动：Phase 1 — 补全 Skill 03 工程包*
+## 八、文档体系总览
+
+| 文档 | 位置 | 用途 | 更新频率 |
+|---|---|---|---|
+| SUPER-SYSTEM-PROMPT.md | 根目录 | Meta-Prompt，AI 激活入口，包含 Parts 1-13 | 每次体系版本升级 |
+| MASTER-BLUEPRINT.md | system/ | 架构权威参考，六层体系全貌 | 重大架构变更时 |
+| system-changelog.md | system/ | 完整版本历史，含关键学习 | 每次版本发布 |
+| decision-log.md | system/ | ADR（架构决策记录），记录「为何这样设计」| 重大设计决策时 |
+| minimum-viable-card.md | 根目录 | 快速上手卡，新用户入口 | 有新模式/重大变更时 |
+| README.md | 根目录 | 仓库主页，公开展示 | 有重大功能发布时 |
+| council-role.md | 各 Skill 目录 | 圆桌角色定义，执行时参考 | 对应 Skill 版本升级时 |
+| interface-contracts/README.md | interface-contracts/ | 接口契约索引，调用顺序图 | schema 版本升级时 |
+| *.yaml | interface-contracts/ | 各接口交接包 schema 定义 | 接口变更时 |
+
+---
+
+*本文档状态：v1.5.0 · 全体系上线，进入稳定期*
+*下一阶段重点：沙盘推演验证 + 圆桌机制实战打磨*
