@@ -1,0 +1,145 @@
+schema_version: "1.0"
+description: "Skill 03（开源技能侦察官）→ Skill 02（SOP工程化）的评估结果交接格式"
+backward_compatibility: "gaps_found/constraints 为可选字段；必须字段在System v2.0.0前不变"
+
+required_fields:
+  requirement_list:
+    type: "array"
+    description: "标准化技能需求清单"
+    item_fields:
+      id: "string（REQ-001格式）"
+      description: "string（需求具体描述）"
+      priority: "enum[must_have, nice_to_have]"
+      category: "enum[nlp, vision, data, api, ml, custom, prompt]"
+
+  evaluation_matrix:
+    type: "array"
+    description: "每个需求的七维度评估结果"
+    item_fields:
+      req_id: "string"
+      selected_solution:
+        name: "string"
+        score: "float（加权综合得分，1-5）"
+        install_command: "string（附注：执行前请验证版本）"
+        license: "string"
+        data_verified_by: "enum[user_provided, ai_inference（需用户核实）]"
+      dimension_scores:
+        functionality: "integer（1-5）"
+        usability: "integer（1-5）"
+        performance: "integer（1-5）"
+        maintainability: "integer（1-5）"
+        community_activity: "integer（1-5）[需用户核实]"
+        compatibility: "integer（1-5）"
+        documentation: "integer（1-5）"
+
+  selected_solutions:
+    type: "object"
+    description: "汇总所有需求的选定方案（req_id → solution_name 映射）"
+
+  packaging_request:
+    type: "object"
+    description: "传给Skill 02的打包指令"
+    fields:
+      skill_name: "string"
+      core_capabilities: "array[string]"
+      sub_skills_count: "integer"
+      tech_stack: "string"
+
+optional_fields:
+  gaps_found:
+    type: "array"
+    description: "找不到成熟开源方案的需求"
+    item_fields:
+      req_id: "string"
+      reason: "string"
+      recommendation: "enum[build_from_scratch, use_skill01_prompt, manual_workaround, skip]"
+
+  constraints:
+    type: "object"
+    fields:
+      budget: "enum[open_source_only, commercial_ok]"
+      learning_cost: "enum[low, medium, high]"
+      integration_target: "string"
+
+  session_id: "string"
+
+format_example:
+  handoff:
+    schema_version: "1.0"
+    from_skill: "skill-03"
+    to_skill: "skill-02"
+    payload:
+      requirement_list:
+        - id: "REQ-001"
+          description: "中文情感分析，准确率>85%，支持正面/中立/负面三分类"
+          priority: "must_have"
+          category: "nlp"
+        - id: "REQ-002"
+          description: "问题类型自动分类（产品/服务/价格/配送）"
+          priority: "must_have"
+          category: "nlp"
+        - id: "REQ-003"
+          description: "Markdown格式周报自动生成"
+          priority: "must_have"
+          category: "custom"
+        - id: "REQ-004"
+          description: "Slack Webhook消息推送"
+          priority: "must_have"
+          category: "api"
+
+      evaluation_matrix:
+        - req_id: "REQ-001"
+          selected_solution:
+            name: "snownlp"
+            score: 4.15
+            install_command: "pip install snownlp==0.12.3  # 执行前请验证最新版本"
+            license: "MIT"
+            data_verified_by: "ai_inference（需用户核实）"
+          dimension_scores:
+            functionality: 4
+            usability: 5
+            performance: 4
+            maintainability: 3
+            community_activity: 3
+            compatibility: 5
+            documentation: 4
+
+        - req_id: "REQ-004"
+          selected_solution:
+            name: "slack_sdk"
+            score: 4.70
+            install_command: "pip install slack-sdk==3.21.3  # 执行前请验证最新版本"
+            license: "MIT"
+            data_verified_by: "ai_inference（需用户核实）"
+          dimension_scores:
+            functionality: 5
+            usability: 5
+            performance: 5
+            maintainability: 5
+            community_activity: 5
+            compatibility: 5
+            documentation: 4
+
+      selected_solutions:
+        "REQ-001": "snownlp"
+        "REQ-002": "jieba + 自定义分类词典"
+        "REQ-003": "build_from_scratch（调用Skill 01设计报告提示词）"
+        "REQ-004": "slack_sdk"
+
+      gaps_found:
+        - req_id: "REQ-003"
+          reason: "Markdown周报生成无成熟开源专项库，需自定义提示词实现"
+          recommendation: "use_skill01_prompt"
+
+      packaging_request:
+        skill_name: "customer-feedback-analyzer"
+        core_capabilities:
+          - "中文情感分析"
+          - "问题类型分类"
+          - "周报生成"
+          - "Slack推送"
+        sub_skills_count: 4
+        tech_stack: "Python 3.10+"
+
+    user_action: "将以上 payload 复制，粘贴到 Skill 02（SOP工程师）的对话开头，进入工程化打包流程"
+    created_at: "2025-06-01"

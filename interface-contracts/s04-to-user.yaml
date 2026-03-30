@@ -1,0 +1,129 @@
+schema_version: "1.0"
+description: "Skill 04（AI项目执行规划官）→ 用户的操作手册标准格式规范"
+backward_compatibility: "optional_sections不影响核心流程；步骤结构稳定"
+
+required_sections:
+
+  environment_info:
+    description: "手册生成前必须收集的环境信息"
+    fields:
+      os: "enum[macOS, Windows, Linux-Ubuntu, Linux-CentOS, Other]"
+      os_version: "string（如macOS 14.0）"
+      runtime: "string（如Python 3.10, Node.js 18）"
+      permission_level: "enum[admin, user, restricted]"
+      target_platform: "string（如Slack, Notion, GitHub等）"
+
+  prerequisites_checklist:
+    description: "前提条件清单，每项可独立验证"
+    item_fields:
+      id: "string（PRE-001格式）"
+      item: "string（需要满足的条件）"
+      verification_method: "string（如何确认已满足，可执行命令优先）"
+      if_not_met: "string（不满足时的处理方式）"
+
+  steps:
+    description: "分步操作指南，每步必须幂等可重复执行"
+    item_fields:
+      step_number: "integer"
+      title: "string（动词开头，5-10字）"
+      action: "string（用户需要做什么，精确描述）"
+      command_or_code: "string（可选，可执行命令）"
+      expected_result: "string（正确执行后用户应该看到什么）"
+      verification: "string（如何确认步骤成功）"
+      time_estimate: "string（如：约2分钟）"
+      idempotency_note: "string（重复执行是否安全）"
+      on_failure: "string（失败时跳转到哪个步骤或FAQ项）"
+
+  breakpoint_recovery:
+    description: "断点恢复总览表，支持从任意步骤恢复"
+    format: |
+      ## 断点恢复指引
+      如果操作中断，告诉我：「我完成了步骤1到N，从步骤N+1继续」
+      
+      | 已完成的最后步骤 | 恢复入口 | 需要确认的状态 |
+      |---|---|---|
+      | 步骤1-3完成 | 从步骤4开始 | [确认方式] |
+      | 步骤4-6完成 | 从步骤7开始 | [确认方式] |
+
+  faq:
+    description: "常见问题与解决方案"
+    item_fields:
+      id: "string（FAQ-001格式）"
+      symptom: "string（用户看到的错误表现）"
+      likely_cause: "string"
+      fix: "string（可执行的解决步骤）"
+      escalation: "string（若无法解决，下一步找谁）"
+
+optional_sections:
+  rollback_plan:
+    description: "部署失败时的回滚方案"
+    required_fields: ["rollback_steps", "rollback_verification"]
+
+  escalation_path:
+    description: "问题升级路径（超出Skill能力范围时）"
+    fields:
+      official_docs: "string（官方文档链接占位）"
+      community_support: "string（社区/论坛）"
+      next_skill: "string（应转向哪个Skill）"
+
+format_example:
+  # 场景：Slack机器人部署操作手册（macOS，Python 3.10）
+  manual:
+    title: "客户反馈分析智能体 · Slack部署操作手册"
+    generated_by: "skill-04"
+    version: "1.0.0"
+    target_skill: "customer-feedback-analyzer v1.0.0"
+
+    environment_info:
+      os: "macOS"
+      os_version: "14.2"
+      runtime: "Python 3.10.12"
+      permission_level: "user"
+      target_platform: "Slack（Free方案）"
+
+    prerequisites_checklist:
+      - id: "PRE-001"
+        item: "已安装Python 3.8+"
+        verification_method: "终端运行：python3 --version，输出应包含3.8或以上版本号"
+        if_not_met: "前往 python.org 下载安装Python 3.10"
+      - id: "PRE-002"
+        item: "已有Slack工作区的管理员权限"
+        verification_method: "登录Slack，进入工作区设置，确认可以创建App"
+        if_not_met: "联系工作区管理员申请权限，或创建新的测试工作区"
+
+    steps:
+      - step_number: 1
+        title: "创建 Slack App"
+        action: "前往 api.slack.com/apps，点击「Create New App」，选择「From scratch」"
+        expected_result: "进入App配置页面，看到App名称和工作区选择"
+        verification: "页面标题显示你的App名称"
+        time_estimate: "约3分钟"
+        idempotency_note: "如已创建，直接进入步骤2；重复创建会生成新App，不影响已有App"
+        on_failure: "若无「Create New App」按钮，确认已登录Slack账号（FAQ-001）"
+
+      - step_number: 2
+        title: "获取 Bot Token"
+        action: "在App页面左侧找到「OAuth & Permissions」，向下滚动到「Bot Token Scopes」，添加以下权限：chat:write / channels:read"
+        command_or_code: "# 无需命令，全程在Slack网页操作"
+        expected_result: "看到两个权限已添加到作用域列表"
+        verification: "列表中出现 chat:write 和 channels:read"
+        time_estimate: "约2分钟"
+        idempotency_note: "权限可重复添加，不会产生副作用"
+        on_failure: "若找不到OAuth页面，参考 FAQ-002"
+
+    breakpoint_recovery: |
+      ## 断点恢复指引
+      如果操作中断，告诉我：「我完成了步骤1到N，从步骤N+1继续」
+      
+      | 已完成步骤 | 恢复入口 | 需确认状态 |
+      |---|---|---|
+      | 步骤1 | 步骤2 | 确认App已创建（访问 api.slack.com/apps 可见App名称）|
+      | 步骤1-2 | 步骤3 | 确认Bot Token已获取（格式为 xoxb- 开头）|
+      | 步骤1-4 | 步骤5 | 确认Webhook URL已获取（格式为 https://hooks.slack.com/...）|
+
+    faq:
+      - id: "FAQ-001"
+        symptom: "api.slack.com页面显示「You don't have permission」"
+        likely_cause: "当前账号不是工作区管理员"
+        fix: "1. 退出登录 2. 用管理员账号重新登录 3. 或联系管理员操作步骤1"
+        escalation: "Slack官方文档：api.slack.com/start/overview"

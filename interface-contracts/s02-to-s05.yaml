@@ -1,0 +1,109 @@
+schema_version: "1.0"
+description: "Skill 02（SOP工程师）→ Skill 05（测试验收工程师）的工程包交付格式"
+backward_compatibility: "deployment_config/github_url为可选字段；test_targets结构稳定，新增字段向后兼容"
+
+required_fields:
+  package_metadata:
+    type: "object"
+    fields:
+      skill_name: "string"
+      version: "string（语义化版本号，如1.0.0）"
+      file_count: "integer"
+      file_list: "array[string]（所有文件相对路径）"
+      description_char_count: "integer（SKILL.md description精确字符数，必须≤1024）"
+
+  test_targets:
+    type: "array"
+    description: "告知Skill 05需要验证哪些能力"
+    item_fields:
+      id: "string（TC-001格式）"
+      capability: "string（对应子Skill名称）"
+      test_type: "enum[functional, edge_case, integration, performance]"
+      test_input_example: "string（具体可执行的输入）"
+      success_criteria: "string（可验证的通过标准）"
+      expected_output_format: "string"
+      manual_verification_required: "boolean（是否必须用户手动执行）"
+
+  defect_history:
+    type: "object"
+    fields:
+      p0_fixed: "integer"
+      p1_fixed: "integer"
+      p2_pending: "integer（已记录入路线图，未修复）"
+      changelog_summary: "string（1-3句变更摘要）"
+
+  known_limitations:
+    type: "array"
+    items: "string（已知的P2级限制，格式：[LIM-XXX] 描述）"
+
+optional_fields:
+  github_url: "string（已发布时填写）"
+  deployment_config:
+    type: "object"
+    fields:
+      platform: "string"
+      env_vars_required: "array[string]"
+      install_command: "string"
+
+format_example:
+  handoff:
+    schema_version: "1.0"
+    from_skill: "skill-02"
+    to_skill: "skill-05"
+    payload:
+      package_metadata:
+        skill_name: "customer-feedback-analyzer"
+        version: "1.0.0"
+        file_count: 18
+        file_list:
+          - "SKILL.md"
+          - "README.md"
+          - "LICENSE"
+          - "core/system-prompt-full.md"
+          - "core/system-prompt-lite.md"
+          - "core/activation-card.md"
+          - "sub-skills/01-sentiment-analysis.md"
+          - "sub-skills/02-issue-classification.md"
+          - "sub-skills/03-report-generation.md"
+          - "sub-skills/04-slack-publisher.md"
+          - "deploy/deploy-universal.md"
+          - "docs/changelog.md"
+        description_char_count: 387
+
+      test_targets:
+        - id: "TC-001"
+          capability: "中文情感分析"
+          test_type: "functional"
+          test_input_example: "这个产品质量很差，完全不值这个价格，强烈不推荐"
+          success_criteria: "输出极性=负面，置信度>0.85，触发词包含「质量很差」或「不推荐」"
+          expected_output_format: "极性标签+置信度+触发词列表"
+          manual_verification_required: true
+
+        - id: "TC-002"
+          capability: "Slack推送"
+          test_type: "integration"
+          test_input_example: "发送测试消息到#customer-feedback频道"
+          success_criteria: "Slack频道收到消息，格式为Markdown，无乱码"
+          expected_output_format: "Slack消息可见"
+          manual_verification_required: true
+
+        - id: "TC-003"
+          capability: "边缘案例：空输入"
+          test_type: "edge_case"
+          test_input_example: "（空字符串）"
+          success_criteria: "返回错误提示，不崩溃，不输出随机情感标签"
+          expected_output_format: "错误提示信息"
+          manual_verification_required: false
+
+      defect_history:
+        p0_fixed: 0
+        p1_fixed: 2
+        p2_pending: 1
+        changelog_summary: "v1.0.0首次发布；修复了输出格式不一致（P1×2）；Slack频道名称配置灵活性列入P2路线图"
+
+      known_limitations:
+        - "[LIM-001] Slack频道名称硬编码，暂不支持动态配置（P2路线图）"
+        - "[LIM-002] 情感分析依赖snownlp，对特定行业术语准确率有限"
+
+    user_action: "将以上 payload 复制，粘贴到 Skill 05（测试验收工程师）的对话开头，启动验收流程"
+    created_at: "2025-06-01"

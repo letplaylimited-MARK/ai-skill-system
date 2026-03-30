@@ -1,0 +1,66 @@
+schema_version: "1.0"
+description: "Skill 00（智能体导航官）→ 任意目标 Skill 的路由输出格式"
+created: "2025"
+backward_compatibility: "必须字段在 System v2.0.0 前不删除/重命名；新增可选字段向后兼容"
+
+required_fields:
+  intent_type:
+    type: "enum"
+    values: ["use_existing_skill", "find_open_source", "build_custom", "optimize_prompt", "deploy_project", "test_validate", "unclear"]
+    description: "用户意图分类"
+
+  confidence_score:
+    type: "float"
+    range: "0.0 - 1.0"
+    description: "路由置信度；>=0.8直接路由，0.6-0.79先确认，<0.6追问"
+
+  recommended_skill:
+    type: "enum"
+    values: ["skill-01", "skill-02", "skill-03", "skill-04", "skill-05", "clarify_first"]
+    description: "推荐的目标Skill"
+
+  routing_reason:
+    type: "string"
+    description: "1-2句说明为何推荐此Skill"
+
+  user_action:
+    type: "string"
+    description: "告知用户下一步操作（复制交接包粘贴到目标Skill）"
+
+optional_fields:
+  alternative_skills:
+    type: "array"
+    items: "enum[skill-00..skill-05]"
+    description: "备选Skill（置信度<0.8时提供）"
+
+  clarification_questions:
+    type: "array"
+    items: "string"
+    max_items: 3
+    description: "置信度<0.6时的追问清单（最多3个，每次只问1个）"
+
+  session_context:
+    type: "object"
+    description: "跨会话追踪信息（可选）"
+
+format_example:
+  # 场景：用户说「我想开发一个分析客户反馈的智能体，输出到Slack」
+  handoff:
+    schema_version: "1.0"
+    from_skill: "skill-00"
+    to_skill: "skill-03"
+    payload:
+      intent_type: "find_open_source"
+      confidence_score: 0.85
+      recommended_skill: "skill-03"
+      routing_reason: "项目需要情感分析和Slack集成，优先探索开源方案评估可行性"
+      alternative_skills: ["skill-04"]
+      project_summary: "客户反馈分析智能体，支持情感分类、问题归类、Slack周报推送"
+      core_requirements:
+        - "中文情感分析（正面/中立/负面）"
+        - "问题类型自动分类"
+        - "Markdown格式周报生成"
+        - "Slack Webhook集成"
+      tech_stack_preference: "Python"
+    user_action: "将以上 payload 内容复制，粘贴到 Skill 03（开源技能侦察官）的对话开头"
+    created_at: "2025-06-01"

@@ -1,0 +1,139 @@
+schema_version: "1.0"
+description: "Skill 05（测试验收工程师）→ 最终发布决策的验收报告格式"
+backward_compatibility: "CONDITIONAL_PASS在旧版本可降级为PASS处理；upstream_feedback_packets为可选字段"
+
+required_fields:
+  verdict:
+    type: "enum"
+    values: ["PASS", "FAIL", "CONDITIONAL_PASS"]
+    description: "最终验收结论"
+
+  version_tested: "string（被测Skill的版本号）"
+  test_date: "string（YYYY-MM-DD格式）"
+  tester: "enum[skill-05-ai, user-manual, hybrid]（测试执行者类型）"
+
+  test_results:
+    type: "array"
+    item_fields:
+      test_id: "string（对应s02-to-s05.yaml中的TC-XXX）"
+      capability: "string"
+      test_type: "enum[functional, edge_case, integration, performance]"
+      executed_by: "enum[user_manual, ai_analysis]（诚实声明执行方式）"
+      input_used: "string（实际使用的测试输入）"
+      actual_output_summary: "string（实际输出摘要）"
+      verdict: "enum[PASS, FAIL, SKIP]"
+      failure_reason: "string（PASS/SKIP时为null）"
+
+  coverage_summary:
+    type: "object"
+    fields:
+      total_cases: "integer"
+      passed: "integer"
+      failed: "integer"
+      skipped: "integer"
+      coverage_rate: "float（0.0-1.0，passed/total）"
+      manual_verification_rate: "float（用户手动执行的测试占比）"
+
+  risk_assessment:
+    type: "object"
+    fields:
+      p0_open: "integer（未修复P0缺陷数；>0则verdict必须为FAIL）"
+      p1_open: "integer（未修复P1缺陷数）"
+      known_limitations_acknowledged: "boolean（用户已知晓已知限制）"
+
+conditional_fields:
+  # CONDITIONAL_PASS时必填
+  conditions_to_watch:
+    type: "array"
+    items: "string（上线后需监控的具体风险点）"
+  monitoring_duration: "string（建议观察期，如：上线后观察7天）"
+  monitoring_method: "string（如何监控，具体说明）"
+
+  # FAIL时必填
+  blocking_issues:
+    type: "array"
+    item_fields:
+      issue_id: "string（BLK-001格式）"
+      description: "string（阻断上线的具体问题）"
+      severity: "enum[P0, P1]"
+      remediation: "string（建议修复步骤）"
+      target_skill: "string（应由哪个Skill修复）"
+
+optional_fields:
+  upstream_feedback_packets:
+    type: "array"
+    description: "需要反馈给上游Skill的缺陷包（每个缺陷独立一个包）"
+    item_fields:
+      feedback_id: "string（FB-001格式）"
+      to_skill: "enum[skill-01, skill-02, skill-03, skill-04]"
+      defect_type: "enum[prompt_quality, package_structure, open_source_selection, manual_error]"
+      description: "string"
+      severity: "enum[P0, P1, P2]"
+      reproduction_steps: "string"
+      suggested_fix: "string"
+      user_action: "string（将此反馈包粘贴到对应Skill的对话开头）"
+
+format_example:
+  acceptance_report:
+    schema_version: "1.0"
+    from_skill: "skill-05"
+    verdict: "CONDITIONAL_PASS"
+    version_tested: "customer-feedback-analyzer v1.0.0"
+    test_date: "2025-06-08"
+    tester: "hybrid"
+
+    test_results:
+      - test_id: "TC-001"
+        capability: "中文情感分析"
+        test_type: "functional"
+        executed_by: "user_manual"
+        input_used: "这个产品质量很差，完全不值这个价格，强烈不推荐"
+        actual_output_summary: "极性：负面，置信度：0.91，触发词：[质量很差, 不推荐]"
+        verdict: "PASS"
+        failure_reason: null
+
+      - test_id: "TC-002"
+        capability: "Slack推送"
+        test_type: "integration"
+        executed_by: "user_manual"
+        input_used: "发送测试消息至#customer-feedback"
+        actual_output_summary: "消息成功推送，格式正确，无乱码"
+        verdict: "PASS"
+        failure_reason: null
+
+      - test_id: "TC-003"
+        capability: "边缘案例：空输入"
+        test_type: "edge_case"
+        executed_by: "ai_analysis"
+        input_used: "（空字符串）"
+        actual_output_summary: "返回提示：「输入内容为空，请提供客户反馈文本」"
+        verdict: "PASS"
+        failure_reason: null
+
+    coverage_summary:
+      total_cases: 8
+      passed: 7
+      failed: 0
+      skipped: 1
+      coverage_rate: 0.875
+      manual_verification_rate: 0.75
+
+    risk_assessment:
+      p0_open: 0
+      p1_open: 0
+      known_limitations_acknowledged: true
+
+    conditions_to_watch:
+      - "情感分析在特定行业术语（医疗/法律）上准确率可能低于85%，建议首周监控分类结果"
+    monitoring_duration: "上线后观察7天"
+    monitoring_method: "每日抽查10条分析结果，确认情感标签与人工判断一致率≥85%"
+
+    upstream_feedback_packets:
+      - feedback_id: "FB-001"
+        to_skill: "skill-01"
+        defect_type: "prompt_quality"
+        description: "情感分析提示词在「期待值较低的正面评价」场景（如：还行吧，比预期好一点）判断为中立，建议优化边界定义"
+        severity: "P2"
+        reproduction_steps: "输入：「比我想的好一些，还算可以」→ 预期：正面（0.6+）→ 实际：中立"
+        suggested_fix: "在提示词中增加「弱正面」场景描述，明确置信度阈值"
+        user_action: "将此反馈包复制，粘贴到 Skill 01（超级提示词工程师）的对话开头，请求针对性优化"
