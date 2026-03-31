@@ -131,6 +131,8 @@ cp -r skill-05-validator ~/.codebuddy/skills/
 | 接口契约 | 六个 Skill 间的数据交换协议 | [interface-contracts/](./interface-contracts/) |
 | 集成测试报告 | 端到端链路验证报告（PASS，91.9/100） | [e2e-integration-test-report.md](./system/e2e-integration-test-report.md) |
 | 体系变更日志 | System 版本历史 | [system-changelog.md](./system/system-changelog.md) |
+| OpenCode 集成总览 | AI Skill + OpenCode + 多大模型协同方案 | [OPENCODE_INTEGRATION.md](./OPENCODE_INTEGRATION.md) |
+| OpenCode 快速上手 | 30 分钟完成配置，四种部署方案（Ollama / Gemini / Claude / Qwen） | [OPENCODE_QUICKSTART.md](./OPENCODE_QUICKSTART.md) |
 
 ---
 
