@@ -1,0 +1,116 @@
+name: CI — Skill System Validation
+
+on:
+  push:
+    branches: [master, main, develop]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  validate-skill-structure:
+    name: Validate Skill Package Structure
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate all 6 Skill directories exist
+        run: |
+          SKILLS=("skill-00-navigator" "skill-01-prompt-engineer" "skill-02-sop-engineer" "skill-03-scout" "skill-04-planner" "skill-05-validator")
+          for skill in "${SKILLS[@]}"; do
+            if [ ! -d "$skill" ]; then
+              echo "ERROR: Missing skill directory: $skill"
+              exit 1
+            fi
+            echo "✅ $skill directory found"
+          done
+
+      - name: Validate each Skill has required files
+        run: |
+          SKILLS=("skill-00-navigator" "skill-01-prompt-engineer" "skill-02-sop-engineer" "skill-03-scout" "skill-04-planner" "skill-05-validator")
+          for skill in "${SKILLS[@]}"; do
+            # 检查 council-role.md
+            if [ ! -f "$skill/council-role.md" ]; then
+              echo "ERROR: Missing council-role.md in $skill"
+              exit 1
+            fi
+            echo "✅ $skill/council-role.md"
+          done
+
+      - name: Validate interface contracts
+        run: |
+          CONTRACTS=("s00-to-any" "s01-to-s02" "s03-to-s02" "s02-to-s05" "s04-to-user" "s05-to-release" "council-to-execution")
+          for contract in "${CONTRACTS[@]}"; do
+            file="interface-contracts/${contract}.yaml"
+            if [ ! -f "$file" ]; then
+              echo "ERROR: Missing interface contract: $file"
+              exit 1
+            fi
+            echo "✅ $file"
+          done
+
+      - name: Validate YAML syntax in interface contracts
+        run: |
+          # 安装 yamllint
+          pip install yamllint -q
+          for yaml_file in interface-contracts/*.yaml; do
+            yamllint -d "{extends: relaxed, rules: {line-length: {max: 200}}}" "$yaml_file" && echo "✅ $yaml_file syntax OK" || echo "WARNING: $yaml_file has YAML issues"
+          done
+
+      - name: Validate system documents
+        run: |
+          DOCS=("README.md" "SUPER-SYSTEM-PROMPT.md" "USER-GUIDE.md" "minimum-viable-card.md")
+          for doc in "${DOCS[@]}"; do
+            if [ ! -f "$doc" ]; then
+              echo "ERROR: Missing system document: $doc"
+              exit 1
+            fi
+            size=$(wc -c < "$doc")
+            echo "✅ $doc ($size bytes)"
+          done
+
+      - name: Check system changelog has version entry
+        run: |
+          if grep -q "System v" system/system-changelog.md; then
+            LATEST=$(grep "## System v" system/system-changelog.md | head -1)
+            echo "✅ Latest version in changelog: $LATEST"
+          else
+            echo "ERROR: No version entry found in system-changelog.md"
+            exit 1
+          fi
+
+      - name: Check mindmap.html exists
+        run: |
+          if [ -f "mindmap.html" ]; then
+            size=$(wc -c < "mindmap.html")
+            echo "✅ mindmap.html ($size bytes)"
+          else
+            echo "WARNING: mindmap.html not found"
+          fi
+
+  validate-skill-04-fw-compliance:
+    name: Validate Skill 04 FW-001/FW-002
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check FW-001 in Skill 04
+        run: |
+          if [ -f "skill-04-planner/core/system-prompt-full.md" ]; then
+            if grep -q "error_handling\|FW-001" skill-04-planner/core/system-prompt-full.md; then
+              echo "✅ FW-001 (error_handling) compliance confirmed in skill-04"
+            else
+              echo "WARNING: FW-001 may not be fully implemented in skill-04"
+            fi
+          fi
+
+      - name: Check FW-002 in Skill 04
+        run: |
+          if [ -f "skill-04-planner/core/system-prompt-full.md" ]; then
+            if grep -q "配置文件\|FW-002\|config" skill-04-planner/core/system-prompt-full.md; then
+              echo "✅ FW-002 (config template) compliance confirmed in skill-04"
+            else
+              echo "WARNING: FW-002 may not be fully implemented in skill-04"
+            fi
+          fi

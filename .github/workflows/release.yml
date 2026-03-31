@@ -1,0 +1,111 @@
+name: Release — Skill System Auto Release
+
+on:
+  push:
+    tags:
+      - 'system-v*.*.*'
+      - 'skill-*-v*.*.*'
+
+jobs:
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract tag info
+        id: tag_info
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+          
+          # 判断是系统版本还是单 Skill 版本
+          if [[ $TAG == system-v* ]]; then
+            echo "TYPE=system" >> $GITHUB_OUTPUT
+            echo "VERSION=${TAG#system-}" >> $GITHUB_OUTPUT
+          else
+            SKILL=$(echo $TAG | sed 's/-v[0-9].*//')
+            VERSION=$(echo $TAG | sed 's/.*-v/v/')
+            echo "TYPE=skill" >> $GITHUB_OUTPUT
+            echo "SKILL=$SKILL" >> $GITHUB_OUTPUT
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -z "$PREV_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"- %s" | head -15)
+          else
+            COMMITS=$(git log ${PREV_TAG}..HEAD --pretty=format:"- %s")
+          fi
+          
+          echo "COMMITS<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMITS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create release for system version
+        if: steps.tag_info.outputs.TYPE == 'system'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag_info.outputs.TAG }}
+          release_name: "AI Skill 体系 ${{ steps.tag_info.outputs.VERSION }}"
+          body: |
+            ## AI Skill 体系 ${{ steps.tag_info.outputs.VERSION }}
+            
+            ### 变更内容
+            ${{ steps.notes.outputs.COMMITS }}
+            
+            ### 六层体系架构
+            | Skill | 名称 | 职责 |
+            |---|---|---|
+            | 00 | 智能体导航官 | 意图识别→路由推荐 |
+            | 01 | 超级提示词工程师 | 提示词工程化 |
+            | 02 | SOP工程师 | Skill工程包开发 |
+            | 03 | 开源技能侦察官 | 开源方案评估 |
+            | 04 | 执行规划官 | 操作手册生成 |
+            | 05 | 测试验收工程师 | 质量验收 |
+            
+            ### 快速开始
+            ```
+            # CodeBuddy 用户直接安装 Skill：
+            /find-skills
+            
+            # 或复制对应 Skill 的激活卡到新对话
+            # 文件路径: skill-XX-name/core/activation-card.md
+            ```
+            
+            ---
+            *AI Skill 体系 · letplaylimited-MARK*
+          draft: false
+          prerelease: ${{ contains(steps.tag_info.outputs.VERSION, '-') }}
+
+      - name: Create release for single skill version
+        if: steps.tag_info.outputs.TYPE == 'skill'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.tag_info.outputs.TAG }}
+          release_name: "${{ steps.tag_info.outputs.SKILL }} ${{ steps.tag_info.outputs.VERSION }}"
+          body: |
+            ## ${{ steps.tag_info.outputs.SKILL }} ${{ steps.tag_info.outputs.VERSION }}
+            
+            ### 变更内容
+            ${{ steps.notes.outputs.COMMITS }}
+            
+            ### 使用方式
+            复制 `${{ steps.tag_info.outputs.SKILL }}/core/activation-card.md` 中的内容到 AI 对话开头即可激活。
+            
+            ---
+            *AI Skill 体系 · letplaylimited-MARK*
+          draft: false
+          prerelease: ${{ contains(steps.tag_info.outputs.VERSION, '-') }}
