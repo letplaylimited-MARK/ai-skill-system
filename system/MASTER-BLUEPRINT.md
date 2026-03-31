@@ -293,8 +293,16 @@ handoff:
 
 **进入时间**：v1.4.1 体系版本
 **目标**：在不引入破坏性变更的前提下持续优化
-- 重点方向：圆桌机制深化（v1.5.0 引入模式 D/E）、交接包 schema v1.1 升级
+- 重点方向：圆桌机制深化（v1.5.0 引入模式 D/E）、交接包 schema v1.1 升级、飞轮建议回归（FW-001/FW-002 已在 v1.5.1 完成）
 - 触发新 Phase 的条件：Skill 05 发现 P0 缺陷，或用户需求触发跨 Skill 接口破坏性变更
+
+**v1.5.1 补丁完成内容**：
+- ✅ FW-001 回归：Skill 04 Step 模板新增 error_handling 必填字段
+- ✅ FW-002 回归：Skill 04 新增配置文件模板强制检查原则
+- ✅ GitHub Actions CI/CD 配置（ai-skill-system + ai-skill-web-app 双仓库）
+- ✅ Web 应用 Docker 容器化配置（Dockerfile + docker-compose.yml）
+- ✅ Dependabot 安全依赖更新配置
+- ✅ system-changelog.md 升级至 v1.2.0
 
 ---
 
@@ -323,7 +331,7 @@ handoff:
 | Skill 01 | v1.0.0 ✅ | ✅ public | ✅ 334字 | ✅ | ✅ 20文件 | ✅ council-role.md | ✅ |
 | Skill 02 | v1.1.0 ✅ | ✅ public | ✅ 357字 | ✅ | ✅ 22文件 | ✅ council-role.md | ✅ |
 | Skill 03 | v1.0.0 ✅ | ✅ public | ✅ | ✅ | ✅ | ✅ council-role.md | ✅ |
-| Skill 04 | v1.0.0 ✅ | ✅ public | ✅ | ✅ | ✅ | ✅ council-role.md | ✅ |
+| Skill 04 | v1.1.0 ✅ | ✅ public | ✅ | ✅ | ✅ | ✅ council-role.md | ✅ |
 | Skill 05 | v1.0.0 ✅ | ✅ public | ✅ | ✅ | ✅ | ✅ council-role.md | ✅ |
 
 **体系完成度：6/6 Skill 可用（100%）**
@@ -363,5 +371,5 @@ handoff:
 
 ---
 
-*本文档状态：v1.5.0 · 全体系上线，进入稳定期*
-*下一阶段重点：沙盘推演验证 + 圆桌机制实战打磨*
+*本文档状态：v1.5.1 · 全体系上线，进入稳定期，FW-001/FW-002 飞轮建议已回归*
+*下一阶段重点：沙盘推演验证 + 圆桌机制实战打磨 + Web 应用生产部署*
