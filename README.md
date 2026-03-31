@@ -164,6 +164,22 @@ handoff:
 
 ---
 
+## 🖥️ Web 操作平台
+
+本体系已配套开发了完整的 Web 应用，将六层 Skill 串联为可视化流水线：
+
+**[ai-skill-web-app](https://github.com/letplaylimited-MARK/ai-skill-web-app)** — Next.js 16 + Prisma + PostgreSQL
+
+- 五种执行模式（全自动 / 逐步审核 / 圆桌预检）
+- 六角色圆桌审议机制（P0 风险门控）
+- 步进式交接包审批与编辑
+- JSON + Markdown 双格式报告导出
+- 内置 OpenCode / Claude Code 智能体引导文件（`AGENT.md`）
+
+> 适合本地部署后，配合 OpenCode 等本地 AI 编码工具继续迭代。
+
+---
+
 ## License
 
 MIT License · 完全免费，可商用
@@ -171,4 +187,4 @@ MIT License · 完全免费，可商用
 ---
 
 *维护者：[letplaylimited-MARK](https://github.com/letplaylimited-MARK)*
-*System v1.2.0 · 2025年*
+*System v1.5.0 · 2026年*
